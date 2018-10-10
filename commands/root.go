@@ -2,11 +2,14 @@ package commands
 
 import "github.com/spf13/cobra"
 
+var name string
+
 var RootCmd = &cobra.Command{
-	Use:   "single",
+	Use:   "one",
 	Short: "Short description",
 	Long:  "Longer description feel free to use a few lines here.",
-	Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
-	},
+}
+
+func init() {
+	RootCmd.PersistentFlags().StringVar(&name, "name", "", "lock name")
 }

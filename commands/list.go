@@ -8,7 +8,7 @@ var echoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		println("Available lock providers:")
 		println("- mysql")
-		println("- ports")
+		println("- port")
 		println("- flock")
 		println("- redis")
 	},

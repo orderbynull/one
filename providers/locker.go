@@ -6,6 +6,6 @@ import (
 
 type Locker interface {
 	Lock(name string) bool
-	Unlock()
+	Unlock(name string)
 	Free()
 }

@@ -6,28 +6,29 @@ import (
 	"log"
 )
 
+const getLockQuery = "SELECT GET_LOCK('%s', 0);"
+const releaseLockQuery = "DO RELEASE_LOCK('%s');"
+const dsn = "%s:%s@tcp(%s:%d)/mysql"
+
 type MySQLLock struct {
-	db   *sql.DB
-	lock string
+	db *sql.DB
 }
 
 // NewMySQLLock ...
-func NewMySQLLock() *MySQLLock {
-	db, err := sql.Open("mysql",
-		"root:515528aA@tcp(127.0.0.1:3306)/mysql")
+func NewMySQLLock(user, password, host string, port int) *MySQLLock {
+	db, err := sql.Open("mysql", fmt.Sprintf(dsn, user, password, host, port))
 	if err != nil {
 		panic(err)
 	}
 
-	return &MySQLLock{db, ""}
+	return &MySQLLock{db}
 }
 
 // Lock ...
 func (m *MySQLLock) Lock(name string) bool {
 	var locked bool
 
-	m.lock = name
-	err := m.db.QueryRow(fmt.Sprintf("SELECT GET_LOCK('%s', 0);", name)).Scan(&locked)
+	err := m.db.QueryRow(fmt.Sprintf(getLockQuery, name)).Scan(&locked)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,8 +37,8 @@ func (m *MySQLLock) Lock(name string) bool {
 }
 
 // Unlock ...
-func (m *MySQLLock) Unlock() {
-	m.db.Exec(fmt.Sprintf("DO RELEASE_LOCK('%s');", m.lock))
+func (m *MySQLLock) Unlock(name string) {
+	m.db.Exec(fmt.Sprintf(releaseLockQuery, name))
 }
 
 // Free ...

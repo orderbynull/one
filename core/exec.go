@@ -9,7 +9,7 @@ import (
 )
 
 const statsTmpl = "------------\nStats: exit code=%d; duration=%.1f sec.\n"
-const lockAcquired = "Lock '%s' already acquired. Exiting."
+const lockAcquired = "Lock already acquired. Exiting."
 
 // execute ...
 func execute(command string) (int, float64) {
@@ -37,11 +37,10 @@ func Process(locker providers.Locker, name string, cmd string) {
 	var duration float64
 
 	if locker.Lock(name) {
-		defer locker.Unlock()
+		defer locker.Unlock(name)
 		exitCode, duration = execute(cmd)
+		fmt.Printf(statsTmpl, exitCode, duration)
 	} else {
-		println(fmt.Sprintf(lockAcquired, name))
+		println(lockAcquired)
 	}
-
-	fmt.Printf(statsTmpl, exitCode, duration)
 }
