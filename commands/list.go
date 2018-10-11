@@ -1,19 +1,33 @@
 package commands
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"github.com/spf13/cobra"
+)
 
-var echoCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List available lock providers",
-	Run: func(cmd *cobra.Command, args []string) {
-		println("Available lock providers:")
-		println("- mysql")
-		println("- port")
-		println("- flock")
-		println("- redis")
-	},
+const listCmdUse = "list"
+const listCmdTmpl = "> %s\n"
+const listCmdHead = "Available lock providers:"
+const listCmdShort = "List available lock providers"
+
+// listCmdProviders holds list of possible lock providers.
+var listCmdProviders = []string{"mysql"}
+
+// listCmd cobra-command prints list of possible lock providers.
+var listCmd = &cobra.Command{
+	Use:   listCmdUse,
+	Short: listCmdShort,
+	Run:   listCmdRun,
+}
+
+// listCmdRun is Run-function for listCmd cobra-command
+var listCmdRun = func(cmd *cobra.Command, args []string) {
+	println(listCmdHead)
+	for _, provider := range listCmdProviders {
+		fmt.Printf(listCmdTmpl, provider)
+	}
 }
 
 func init() {
-	RootCmd.AddCommand(echoCmd)
+	RootCmd.AddCommand(listCmd)
 }

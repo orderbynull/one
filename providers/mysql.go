@@ -8,14 +8,15 @@ import (
 
 const getLockQuery = "SELECT GET_LOCK('%s', 0);"
 const releaseLockQuery = "DO RELEASE_LOCK('%s');"
-const dsn = "%s:%s@tcp(%s:%d)/mysql"
+const dsn = "%s:%s@tcp(%s:%s)/"
 
+// MySQLLock is just struct for holding MySQL connection
 type MySQLLock struct {
 	db *sql.DB
 }
 
-// NewMySQLLock ...
-func NewMySQLLock(user, password, host string, port int) *MySQLLock {
+// NewMySQLLock opens connection to MySQL.
+func NewMySQLLock(user, password, host string, port string) *MySQLLock {
 	db, err := sql.Open("mysql", fmt.Sprintf(dsn, user, password, host, port))
 	if err != nil {
 		panic(err)
@@ -24,7 +25,7 @@ func NewMySQLLock(user, password, host string, port int) *MySQLLock {
 	return &MySQLLock{db}
 }
 
-// Lock ...
+// Lock acquires non-blocking lock via GET_LOCK().
 func (m *MySQLLock) Lock(name string) bool {
 	var locked bool
 
@@ -36,12 +37,12 @@ func (m *MySQLLock) Lock(name string) bool {
 	return bool(locked)
 }
 
-// Unlock ...
+// Unlock releasing previously acquired lock via RELEASE_LOCK()
 func (m *MySQLLock) Unlock(name string) {
 	m.db.Exec(fmt.Sprintf(releaseLockQuery, name))
 }
 
-// Free ...
+// Free closes connection to MySQL
 func (m *MySQLLock) Free() {
 	m.db.Close()
 }

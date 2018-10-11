@@ -11,7 +11,7 @@ import (
 const statsTmpl = "------------\nStats: exit code=%d; duration=%.1f sec.\n"
 const lockAcquired = "Lock already acquired. Exiting."
 
-// execute ...
+// execute runs command and returns some metrics.
 func execute(command string) (int, float64) {
 	var exitCode int
 
@@ -29,7 +29,7 @@ func execute(command string) (int, float64) {
 	return exitCode, time.Since(start).Seconds()
 }
 
-// Process ...
+// Process holds all lock/exec/unlock logic for any provider.
 func Process(locker providers.Locker, name string, cmd string) {
 	defer locker.Free()
 
