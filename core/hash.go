@@ -1,14 +1,18 @@
 package core
 
 import (
+	"encoding/base64"
 	"fmt"
-	"hash/fnv"
+	"github.com/pkg/errors"
 )
 
-// MakeLockName returns hash-based lock name for given command.
-func MakeLockName(cmd string) string {
-	h := fnv.New32a()
-	h.Write([]byte(cmd))
+var errorEmptyCmd = errors.New("empty cmd")
 
-	return fmt.Sprintf("%d_lock", h.Sum32())
+// MakeLockName returns base64 lock name for given command.
+func MakeLockName(cmd string) (string, error) {
+	if cmd != "" {
+		return fmt.Sprintf("%s_lock", base64.StdEncoding.EncodeToString([]byte(cmd))), nil
+	} else {
+		return "", errorEmptyCmd
+	}
 }
