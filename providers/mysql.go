@@ -44,7 +44,9 @@ func (m *MySQLLock) Unlock(name string) {
 	}
 }
 
-// Free closes connection to MySQL
-func (m *MySQLLock) Free() {
-	m.db.Close()
+// Close closes connection to MySQL
+func (m *MySQLLock) Close() {
+	if err := m.db.Close(); err != nil {
+		core.ErrorAndExit(err)
+	}
 }

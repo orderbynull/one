@@ -16,3 +16,7 @@ func TestExecute(t *testing.T) {
 		t.Errorf("Expected %d, got %d", 1, code)
 	}
 }
+
+func TestProcess(t *testing.T) {
+
+}

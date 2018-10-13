@@ -31,7 +31,9 @@ func execute(command string) (int, float64) {
 
 // Process holds all lock/exec/unlock logic for any provider.
 func Process(locker Locker, name string, cmd string) error {
-	defer locker.Free()
+	if c, ok := locker.(Closer); ok {
+		defer c.Close()
+	}
 
 	if locker.Lock(name) {
 		defer locker.Unlock(name)
