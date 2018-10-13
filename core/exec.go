@@ -1,15 +1,15 @@
 package core
 
 import (
-	"fmt"
-	"github.com/orderbynull/one/providers"
+	"github.com/pkg/errors"
 	"os"
 	"os/exec"
 	"time"
 )
 
 const statsTmpl = "------------\nStats: exit code=%d; duration=%.1f sec.\n"
-const lockAcquired = "Lock already acquired. Exiting."
+
+var errorCannotLock = errors.New("lock already acquired")
 
 // execute runs command and returns some metrics.
 func execute(command string) (int, float64) {
@@ -30,17 +30,15 @@ func execute(command string) (int, float64) {
 }
 
 // Process holds all lock/exec/unlock logic for any provider.
-func Process(locker providers.Locker, name string, cmd string) {
+func Process(locker Locker, name string, cmd string) error {
 	defer locker.Free()
-
-	var exitCode int
-	var duration float64
 
 	if locker.Lock(name) {
 		defer locker.Unlock(name)
-		exitCode, duration = execute(cmd)
-		fmt.Printf(statsTmpl, exitCode, duration)
+		execute(cmd)
+
+		return nil
 	} else {
-		println(lockAcquired)
+		return errorCannotLock
 	}
 }

@@ -9,9 +9,7 @@ import (
 
 const configType = "yaml"
 const rootCmdUse = "one"
-const flagName = "name"
 const flagConfig = "config"
-const flagNameUsage = "custom lock name"
 const flagConfigUsage = "config file (default is ./one.yaml)"
 const rootCmdConfigFailure = "Can't read config:"
 
@@ -43,6 +41,5 @@ var initConfig = func() {
 // init ...
 func init() {
 	cobra.OnInitialize(initConfig)
-	RootCmd.PersistentFlags().String(flagName, "", flagNameUsage)
 	RootCmd.PersistentFlags().StringVar(&configFile, flagConfig, "", flagConfigUsage)
 }

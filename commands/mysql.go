@@ -6,7 +6,6 @@ import (
 	"github.com/orderbynull/one/providers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 	"strings"
 )
 
@@ -31,20 +30,15 @@ var mysqlCmd = &cobra.Command{
 
 // mysqlCmdRun is Run-function for mysqlCmd cobra-command.
 var mysqlCmdRun = func(cmd *cobra.Command, args []string) {
-	var err error
-
-	name := cmd.Flag(flagName).Value.String()
 	command := strings.Join(args, " ")
 
-	if name == "" {
-		name, err = core.MakeLockName(command)
+	name, err := core.MakeLockName(command)
+	if err != nil {
+		core.ErrorAndExit(err)
 	}
 
-	if err == nil {
-		core.Process(initMySQLLocker(), name, command)
-	} else {
-		core.Error(err)
-		os.Exit(1)
+	if err := core.Process(initMySQLLocker(), name, command); err != nil {
+		core.ErrorAndExit(err)
 	}
 }
 

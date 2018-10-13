@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var errorEmptyCmd = errors.New("empty cmd")
+var errorEmptyCmd = errors.New("empty command")
 
 // MakeLockName returns base64 lock name for given command.
 func MakeLockName(cmd string) (string, error) {

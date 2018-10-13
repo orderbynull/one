@@ -3,7 +3,7 @@ package providers
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	"github.com/orderbynull/one/core"
 )
 
 const getLockQuery = "SELECT GET_LOCK('%s', 0);"
@@ -31,7 +31,7 @@ func (m *MySQLLock) Lock(name string) bool {
 
 	err := m.db.QueryRow(fmt.Sprintf(getLockQuery, name)).Scan(&locked)
 	if err != nil {
-		log.Fatal(err)
+		core.ErrorAndExit(err)
 	}
 
 	return bool(locked)
@@ -39,7 +39,9 @@ func (m *MySQLLock) Lock(name string) bool {
 
 // Unlock releasing previously acquired lock via RELEASE_LOCK()
 func (m *MySQLLock) Unlock(name string) {
-	m.db.Exec(fmt.Sprintf(releaseLockQuery, name))
+	if _, err := m.db.Exec(fmt.Sprintf(releaseLockQuery, name)); err != nil {
+		core.ErrorAndExit(err)
+	}
 }
 
 // Free closes connection to MySQL
